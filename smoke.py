@@ -14,7 +14,7 @@ start_times = {}
 # Function to handle the /start command
 @bot.message_handler(commands=['start'])
 def start(message):
-    bot.reply_to(message, "Добрый день. Вас приветствует бот go-go-Smoke. Нужна помощь - вводи /help")
+    bot.reply_to(message, "Здарова бандиты. Нужна помощь - вводи /help")
 
 
 # Function to handle the SMOKE button press
@@ -23,8 +23,8 @@ def start_smoke_poll(message):
     chat_id = message.chat.id
     if chat_id not in ongoing_polls:
         # Start a new poll
-        poll_message = bot.send_poll(chat_id, "Пойдем курить?",
-                                     options=['Го-го-го', 'Нет, я ОЧЕНЬ занят'],
+        poll_message = bot.send_poll(chat_id, "it's time to smoke",
+                                     options=['Go-Go-Go', 'Нет, я "очень" занят'],
                                      is_anonymous=False,
                                      open_period=600)  # 10 minutes
         ongoing_polls[chat_id] = poll_message.poll.id
