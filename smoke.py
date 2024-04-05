@@ -86,7 +86,7 @@ def stop_poll(message):
         current_time = time.time()
         duration = int(current_time - start_time)  # Duration in seconds
         minutes, seconds = divmod(duration, 60)
-        bot.reply_to(message, f"Время потраченное на перекур: {minutes:02d}:{seconds:02d}")
+        bot.reply_to(message, f"Всем спасибо, возвращайтесь к своим задачам")
         del ongoing_polls[chat_id]
         del start_times[chat_id]
     else:
