@@ -2,6 +2,8 @@ import threading
 import telebot
 import time
 import random
+from config.cfg import basic_config
+
 
 import requests
 
@@ -9,7 +11,9 @@ import anectodes
 
 from config.cfg import basic_config
 
-bot = telebot.TeleBot(basic_config.bot_token)a
+bot = telebot.TeleBot(basic_config.bot_token)
+
+
 
 
 ongoing_polls = {}
