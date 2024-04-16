@@ -9,7 +9,7 @@ import anectodes
 
 from config.cfg import basic_config
 
-bot = telebot.TeleBot(basic_config.bot_token)
+bot = telebot.TeleBot(basic_config.bot_token)a
 
 
 ongoing_polls = {}
