@@ -9,7 +9,7 @@ import requests
 
 import anectodes
 
-from config.cfg import basic_config
+
 
 bot = telebot.TeleBot(basic_config.bot_token)
 
