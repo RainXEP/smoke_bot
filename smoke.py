@@ -21,7 +21,7 @@ ongoing_polls = {}
 # Dictionary to store start times of smoking sessions
 start_times = {}
 
-smoke_food_topic_id = 61
+smoke_food_topic_id = 54
 
 
 ## jokes_url = ['https://v2.jokeapi.dev/joke/Programming,Miscellaneous,Dark,Spooky?format=txt', 'https://icanhazdadjoke.com/']
