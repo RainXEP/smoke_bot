@@ -1,27 +1,29 @@
 import threading
 import telebot
+from telebot import apihelper
+
 import time
 import random
-from config.cfg import basic_config
+# from config.cfg import basic_config
 
 
 import requests
 
 import anectodes
+import logging
 
-
-
-bot = telebot.TeleBot(basic_config.bot_token)
-
-
-
+bot = telebot.TeleBot("6896373452:AAFgVQcGNIfaG09TCdGPeh_TLKsmnsptP2U")
+apihelper.READ_TIMEOUT = 35
+apihelper.CONNECT_TIMEOUT = 35
 
 ongoing_polls = {}
 
 # Dictionary to store start times of smoking sessions
 start_times = {}
 
-smoke_food_topic_id = 54
+smoke_food_topic_id = 61
+
+logging.basicConfig(level=logging.INFO)
 
 
 ## jokes_url = ['https://v2.jokeapi.dev/joke/Programming,Miscellaneous,Dark,Spooky?format=txt', 'https://icanhazdadjoke.com/']
@@ -29,6 +31,7 @@ smoke_food_topic_id = 54
 @bot.message_handler(commands=['joke'])
 def send_joke(message):
     chat_id = message.chat.id
+    logging.info(f"Received 'joke' command from {chat_id} and topic_id: {smoke_food_topic_id}")
     # headers = {'Accept': 'text/plain'}
     # response = requests.get(url=random.choice(jokes_url), headers=headers)
     # joke = response.text
@@ -38,7 +41,9 @@ def send_joke(message):
 # Function to handle the /start command
 @bot.message_handler(commands=['start'])
 def start(message):
-    print("chat_id:", message.chat.id)
+    chat_id = message.chat.id
+    logging.info(f"Received 'start' command from {chat_id} and topic_id: {smoke_food_topic_id}")
+
     bot.reply_to(message, "Здарова бандиты. Нужна помощь - вводи /help")
 
 
@@ -46,7 +51,7 @@ def start(message):
 @bot.message_handler(commands=['smoke'])
 def start_smoke_poll(message):
     chat_id = message.chat.id
-
+    logging.info(f"Received 'smoke' command from {chat_id} and topic_id: {smoke_food_topic_id}")
     if chat_id not in ongoing_polls:
         # Start a new poll
         poll_message = bot.send_poll(message.chat.id, "it's time to smoke",
@@ -81,6 +86,7 @@ def send_end_message(chat_id):
 @bot.message_handler(commands=['stop'])
 def stop_poll(message):
     chat_id = message.chat.id
+    logging.info(f"Received 'stop-smoke' command from {chat_id} and topic_id: {smoke_food_topic_id}")
     if chat_id in ongoing_polls:
         start_time = start_times.get(chat_id, 0)
         current_time = time.time()
@@ -96,6 +102,7 @@ def stop_poll(message):
 @bot.message_handler(commands=['alreadyopened'])
 def already_opened_poll(message):
     chat_id = message.chat.id
+    logging.info(f"Received 'alreadyOpened' command from {chat_id} topic_id: {smoke_food_topic_id}")
     if chat_id in ongoing_polls:
         bot.reply_to(message, "Опрос начат: True")
     else:
@@ -104,6 +111,8 @@ def already_opened_poll(message):
 
 @bot.message_handler(commands=['help'])
 def help_command(message):
+    chat_id = message.chat.id
+    logging.info(f"Received 'help' command from {chat_id} topic_id: {smoke_food_topic_id}")
     help_text = "/smoke - начать опрос для перекура\n" \
                 "/alreadyopened - узнать, начаты ли уже опросы\n" \
                 "/stop - завершить перекур\n" \
@@ -119,7 +128,7 @@ ongoing_food_polls = {}
 @bot.message_handler(commands=['food'])
 def start_food_poll(message):
     chat_id = message.chat.id
-
+    logging.info(f"Received 'food' command from {chat_id} topic_id: {smoke_food_topic_id}")
     if chat_id not in ongoing_food_polls:
         # Start a new food poll
         poll_message = bot.send_poll(chat_id, "Время обеда, куда идем? 🤔🕐🥩",
@@ -168,6 +177,8 @@ def stop_food_poll(chat_id, message_id):
 
 @bot.message_handler(func=lambda message: True)
 def handle_invalid_commands(message):
+    chat_id = message.chat.id
+    logging.info(f"Received 'funny_function' command from {chat_id} and topic_id: {smoke_food_topic_id}")
     if message.text.startswith('/'):
         bot.reply_to(message, "Хуйню не пиши, такой команды нет")
     if message.text.startswith('/funny_function'):
@@ -175,4 +186,18 @@ def handle_invalid_commands(message):
 
 
 # Start the bot
-bot.polling()
+def start_bot():
+
+    while True:
+        try:
+            bot.remove_webhook()
+            time.sleep(1)
+            logging.info("Bot is starting...")
+            bot.polling(none_stop=True)
+        except Exception as e:
+            logging.error(f"Bot crashed due to: {e}")
+            time.sleep(10)
+
+
+if __name__ == "__main__":
+    start_bot()
