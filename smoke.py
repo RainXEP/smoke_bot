@@ -4,24 +4,30 @@ from telebot import apihelper
 
 import time
 import random
-# from config.cfg import basic_config
 
+# from config.cfg import basic_config
 
 import requests
 
 import anectodes
 import logging
 
-bot = telebot.TeleBot("6896373452:AAFgVQcGNIfaG09TCdGPeh_TLKsmnsptP2U")
+
+
 apihelper.READ_TIMEOUT = 35
 apihelper.CONNECT_TIMEOUT = 35
+
+
+
+bot = telebot.TeleBot("6896373452:AAFgVQcGNIfaG09TCdGPeh_TLKsmnsptP2U")
+
 
 ongoing_polls = {}
 
 # Dictionary to store start times of smoking sessions
 start_times = {}
 
-smoke_food_topic_id = 61
+smoke_food_topic_id = 54
 
 logging.basicConfig(level=logging.INFO)
 
