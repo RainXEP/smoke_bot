@@ -8,31 +8,58 @@ import random
 # from config.cfg import basic_config
 
 import requests
-
+import json
 import anectodes
 import logging
-
-
 
 apihelper.READ_TIMEOUT = 35
 apihelper.CONNECT_TIMEOUT = 35
 
-
-
 bot = telebot.TeleBot("6896373452:AAFgVQcGNIfaG09TCdGPeh_TLKsmnsptP2U")
-
+GEMINI_API_KEY = "AIzaSyBpknvRWrw0qtI7JRl3W9xUt9c9VFpnlkM"
 
 ongoing_polls = {}
 
 # Dictionary to store start times of smoking sessions
 start_times = {}
 
-smoke_food_topic_id = 54
+smoke_food_topic_id = 54  # 61
 
 logging.basicConfig(level=logging.INFO)
 
 
-## jokes_url = ['https://v2.jokeapi.dev/joke/Programming,Miscellaneous,Dark,Spooky?format=txt', 'https://icanhazdadjoke.com/']
+def call_gemini_api(query):
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key={GEMINI_API_KEY}"
+    headers = {
+        "Content-Type": "application/json"
+    }
+    payload = {
+        "contents": [
+            {"parts": [{"text": query}]}
+        ]
+    }
+    try:
+        response = requests.post(url, json=payload, headers=headers)
+        response_data = response.json()
+        return response_data['candidates'][0]['content']['parts'][0]['text']
+    except Exception as e:
+        print(f"Response: {response.text}")
+        print(e)
+        return "А? Не услышал, еще раз повтори, брат"
+
+
+@bot.message_handler(commands=['bot'])
+def handle_command(message):
+
+    query = message.text.split(maxsplit=1)
+    if len(query) > 1:
+        response = call_gemini_api(query[1])
+        bot.reply_to(message, response)
+    else:
+        bot.reply_to(message, "Для обращения ко мне юзай /bot {твой запрос}")
+
+
+# jokes_url = ['https://v2.jokeapi.dev/joke/Programming,Miscellaneous,Dark,Spooky?format=txt', 'https://icanhazdadjoke.com/']
 
 @bot.message_handler(commands=['joke'])
 def send_joke(message):
@@ -44,7 +71,6 @@ def send_joke(message):
     bot.send_message(chat_id, random.choice(anectodes.mega_jokes), message_thread_id=smoke_food_topic_id)
 
 
-# Function to handle the /start command
 @bot.message_handler(commands=['start'])
 def start(message):
     chat_id = message.chat.id
@@ -89,6 +115,11 @@ def send_end_message(chat_id):
     bot.send_message(chat_id, "Больше не ждем, мы пошли ;)", message_thread_id=smoke_food_topic_id)
 
 
+def send_message_about_money(chat_id):
+    bot.send_message(chat_id, "Господа, просьба скинуть деньги за обед, если еще не скинули",
+                     message_thread_id=smoke_food_topic_id)
+
+
 @bot.message_handler(commands=['stop'])
 def stop_poll(message):
     chat_id = message.chat.id
@@ -124,7 +155,8 @@ def help_command(message):
                 "/stop - завершить перекур\n" \
                 "/food - начать опрос для выбора места для обеда\n" \
                 "/funny_function - 🤡\n" \
-                "/joke - 500 неприличных анекдотов"
+                "/joke - 500 неприличных анекдотов\n" \
+                "/bot {запрос} - Бот ответит почти на любой вопрос\n"
     bot.reply_to(message, help_text)
 
 
@@ -138,13 +170,13 @@ def start_food_poll(message):
     if chat_id not in ongoing_food_polls:
         # Start a new food poll
         poll_message = bot.send_poll(chat_id, "Время обеда, куда идем? 🤔🕐🥩",
-                                     options=['Бесказан (Плов-лагман примерно, дешево и быстро) 🫖',
-                                              'Столовая на Абая-Гагарина (джаст э регуляр столовая, вариант плотного и недорого обеда) 🥪',
-                                              'Апрель (а когда не обедали) 🤌',
-                                              'Asian Barbeque (что-то на азиатском) 🍜 🥢',
-                                              'Salsabil (V.I.P BesKazan)  😎',
-                                              'Хареба (Дорого, но бизнес ланчи по 2к вроде как) 🥟',
-                                              'Грузинский двор (А почему нет?) 🍖',
+                                     options=['Бесказан 🫖',
+                                              'Столовая на Абая-Гагарина 🥪',
+                                              'Апрель 🤌',
+                                              'Asian Barbeque 🍜 🥢',
+                                              'Salsabil 😎',
+                                              'Хареба  🥟',
+                                              'Грузинский двор 🍖',
                                               'Обед с собой 🌝 / Иду обедать с другими',
                                               'На хате пообедаю ✌️🚶‍',
                                               'Кальян раздуть в чайхане 🤙'],
@@ -177,6 +209,9 @@ def stop_food_poll(chat_id, message_id):
                     bot.send_message(chat_id,
                                      f"Место выбрано - решили что {winning_option} лучший вариант сегодня. Приятного аппетита!",
                                      message_thread_id=smoke_food_topic_id)
+                   # Добавлен таймер, который запускает сообщение о необходимости скинуть деньги за обед
+                    money_message_timer = threading.Timer(3600, send_message_about_money, args=[chat_id])
+                    money_message_timer.start()
             except Exception as e:
                 print("An error occurred while stopping the poll:", e)
 
@@ -193,7 +228,6 @@ def handle_invalid_commands(message):
 
 # Start the bot
 def start_bot():
-
     while True:
         try:
             bot.remove_webhook()
