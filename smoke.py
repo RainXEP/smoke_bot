@@ -15,7 +15,7 @@ import logging
 apihelper.READ_TIMEOUT = 35
 apihelper.CONNECT_TIMEOUT = 35
 
-bot = telebot.TeleBot("6979932205:AAG5uBh5deYQQ4U023-uYsTTBxjeosz7_18")
+bot = telebot.TeleBot("6896373452:AAFgVQcGNIfaG09TCdGPeh_TLKsmnsptP2U")
 GEMINI_API_KEY = "AIzaSyBpknvRWrw0qtI7JRl3W9xUt9c9VFpnlkM"
 
 ongoing_polls = {}
@@ -23,7 +23,7 @@ ongoing_polls = {}
 # Dictionary to store start times of smoking sessions
 start_times = {}
 
-smoke_food_topic_id = 61  # 61
+smoke_food_topic_id = 54  # 61
 
 logging.basicConfig(level=logging.INFO)
 
