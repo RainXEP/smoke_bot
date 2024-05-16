@@ -15,7 +15,7 @@ import logging
 apihelper.READ_TIMEOUT = 35
 apihelper.CONNECT_TIMEOUT = 35
 
-bot = telebot.TeleBot("6896373452:AAFgVQcGNIfaG09TCdGPeh_TLKsmnsptP2U") #
+bot = telebot.TeleBot("6896373452:AAFgVQcGNIfaG09TCdGPeh_TLKsmnsptP2U")
 GEMINI_API_KEY = "AIzaSyA0efxMtuOX-SI-tLZfsGrXh-cG16pV7Pc"
 
 ongoing_polls = {}
